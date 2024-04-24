@@ -1,0 +1,36 @@
+// {
+//   "compilerOptions": {
+//     "target": "es6",
+//     "module": "es6",
+//     "moduleResolution": "node",
+//     "outDir": "./dist",
+//     "lib": ["es2017", "dom", "webworker"],
+//     "types": [],
+//     "strict": true
+//   },
+//   "files": [
+//     "./src/main.ts",
+//     "./src/dbWorker.ts",
+//     "./src/GSet.ts"
+//   ]
+// }
+
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "ESNext",
+    "lib": ["es2017", "dom"],
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "strict": true,
+    "noEmitOnError": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./src/dbWorker.ts"  // Exclude Web Worker file from main compilation
+  ]
+}
+  

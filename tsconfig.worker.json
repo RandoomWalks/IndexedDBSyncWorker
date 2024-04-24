@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "none", // Web workers do not support ES modules
+        "lib": [
+            "es2017",
+            "webworker"
+        ],
+        "outDir": "./dist",
+        "moduleResolution": "node",
+        "strict": true,
+        "noEmitOnError": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "./src/dbWorker.ts" // Specifically compile only the worker file
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
