@@ -15,22 +15,53 @@
 //   ]
 // }
 
+// {
+//   "compilerOptions": {
+//     "target": "es6",
+//     "module": "ESNext",
+//     "lib": ["es2017", "dom"],
+//     "outDir": "./dist",
+//     "moduleResolution": "node",
+//     "strict": true,
+//     "noEmitOnError": true,
+//     "esModuleInterop": true
+//   },
+//   "include": [
+//     "./src/**/*"
+//   ],
+//   "exclude": [
+//     "./src/dbWorker.ts"  // Exclude Web Worker file from main compilation
+//   ]
+// }
+  
+// {
+//   "compilerOptions": {
+//     "module": "ESNext",
+//     "target": "es6",
+//     "moduleResolution": "node",
+//     "esModuleInterop": true,
+//     "allowSyntheticDefaultImports": true,
+//     "strict": true
+//   },
+//   "include": ["src/**/*"],
+//   "exclude": ["node_modules"]
+// }
+
+
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "ESNext",
-    "lib": ["es2017", "dom"],
-    "outDir": "./dist",
-    "moduleResolution": "node",
-    "strict": true,
-    "noEmitOnError": true,
-    "esModuleInterop": true
+    "target": "es6",        // Compile to ECMAScript 6
+    "module": "ESNext",     // Use ESNext modules for compatibility with Webpack's dynamic imports
+    "moduleResolution": "node", // Node-style module resolution
+    "outDir": "./dist",     // Output directory for compiled files
+    "lib": ["dom", "ESNext"], // Include typings for DOM and ES2017
+    "esModuleInterop": true, // Allows default imports from modules with no default export
+    "allowSyntheticDefaultImports": true, // Allow default imports from non-ES module
+    "strict": true,         // Enable all strict type-checking options
+    "noEmitOnError": false,  // Do not emit outputs if any errors were reported
+    "sourceMap": true,       // Generate sourcemaps for debugging
+    "skipLibCheck": true
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "./src/dbWorker.ts"  // Exclude Web Worker file from main compilation
-  ]
+  "include": ["src/**/*.ts"],   // Include all files in the src directory
+  "exclude": ["node_modules","src/worker/**/*"] // Exclude node_modules
 }
-  

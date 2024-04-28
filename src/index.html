@@ -1,0 +1,71 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB with Web Worker</title>
+    <script src="dist/main.bundle.js" defer></script>
+</head>
+
+<body>
+    <h1>IndexedDB with Web Worker Demo</h1>
+    <button id="addButton">Add New Item</button>
+    <button id="getItemButton">Get Item</button>
+    <script>
+        // attach event listeners in JavaScript, not in HTML attributes.
+        document.getElementById('addButton').addEventListener('click', addNewItem);
+        document.getElementById('getItemButton').addEventListener('click', getItemById);
+
+        function addNewItem() {
+            // Implementation to add new item
+            console.log("Adding new item...");
+            // Presumably, you would call a function to post a message to the worker here
+        }
+
+        function getItemById() {
+            // Implementation to get an item by ID
+            console.log("Getting item by ID...");
+            // Similarly, call a function that interacts with the worker to fetch data
+        }
+    </script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB with Web Worker</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <script src="main.bundle.js" defer></script>
+    <script src="dbWorker.bundle.js" defer></script>
+
+</head>
+<body>
+    <h1>IndexedDB with Web Worker Demo</h1>
+
+    <!-- Form for adding a new item -->
+    <form id="addItemForm">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" name="itemName" required>
+        <label for="itemValue">Item Value:</label>
+        <input type="text" id="itemValue" name="itemValue" required>
+        <button type="submit">Add New Item</button>
+    </form>
+
+    <!-- Input for getting an item by ID -->
+    <label for="itemId">Item ID:</label>
+    <input type="text" id="itemId" name="itemId" required>
+    <button id="getItemButton">Get Item</button>
+
+    <!-- Section for displaying messages to the user -->
+    <div id="message"></div>
+
+    <!-- Reference to external JS file -->
+    <!-- <script src="src/app.js" defer></script>  -->
+</body>
+</html>

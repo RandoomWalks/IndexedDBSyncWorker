@@ -1,16 +1,45 @@
-// Worker is being created and expected to be found in the `dist` directory.
-const dbWorker = new Worker('../dist/dbWorker.js');
+// Define a type for messages that are sent to the worker
+type WorkerMessageType = 'add' | 'getItems';
 
-// Event handler for messages received from the worker.
-dbWorker.onmessage = (event: MessageEvent) => {
-    // Check if the message is of type 'items' and log the items received from the worker.
-    if (event.data.type === 'items') {
-        console.log(`Items in set ${event.data.id}:`, event.data.items);
+// Define the structure for messages sent to the worker
+interface WorkerMessage {
+    type: WorkerMessageType;
+    payload: { id: string; item?: string };
+}
+
+class DBWorkerManager {
+    private dbWorker: Worker;
+
+    constructor(workerPath: string) {
+        this.dbWorker = new Worker(workerPath);
+        this.setupMessageHandler();
     }
-};
 
-// Post a message to the worker to add an item to the G-Set with the given ID.
-dbWorker.postMessage({ type: 'add', payload: { id: 'exampleSet', item: 'Hello' } });
+    // Setup the event handler for messages received from the worker
+    private setupMessageHandler() {
+        this.dbWorker.onmessage = (event: MessageEvent) => {
+            if (event.data.type === 'items') {
+                console.log(`Items in set ${event.data.id}:`, event.data.items);
+            }
+        };
+    }
 
-// Post a message to the worker to retrieve items from the G-Set with the given ID.
-dbWorker.postMessage({ type: 'getItems', payload: { id: 'exampleSet' } });
+    // Send a message to the worker to add an item to the G-Set
+    addItemToSet(setId: string, item: string) {
+        const message: WorkerMessage = { type: 'add', payload: { id: setId, item } };
+        this.dbWorker.postMessage(message);
+    }
+
+    // Send a message to the worker to retrieve items from the G-Set
+    getItemsFromSet(setId: string) {
+        const message: WorkerMessage = { type: 'getItems', payload: { id: setId } };
+        this.dbWorker.postMessage(message);
+    }
+}
+
+// Create an instance of the DBWorkerManager
+const dbWorkerManager = new DBWorkerManager('dbWorker.bundle.js');
+
+// Use the DBWorkerManager instance to interact with the web worker
+dbWorkerManager.addItemToSet('exampleSet', 'Hello');
+dbWorkerManager.getItemsFromSet('exampleSet');

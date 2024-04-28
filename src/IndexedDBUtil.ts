@@ -6,75 +6,94 @@ interface Item {
     syncStatus: 'pending' | 'synced'; // Sync status of the item.
 }
 
-// Utility class for interacting with IndexedDB.
-class IndexedDBUtil {
-    private db: IDBDatabase | null = null; // Reference to the IndexedDB database.
+/**
+ * Utility class for interacting with IndexedDB.
+ * It provides a simplified interface for common database operations like adding, retrieving, updating, and deleting items.
+ */
 
-    // Initialize the database connection.
-    constructor() {
-        this.openDB();
+class IndexedDBUtil {
+    private static instance: IndexedDBUtil;
+    private dbPromise: Promise<IDBDatabase>;
+
+    private constructor() {
+        this.dbPromise = new Promise<IDBDatabase>((resolve, reject) => {
+            const request = indexedDB.open("SynchronizationDB", 1);
+
+            request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+                const db = (event.target as IDBOpenDBRequest).result;
+                if (!db.objectStoreNames.contains('items')) {
+                    const itemsStore = db.createObjectStore("items", { keyPath: "id", autoIncrement: true });
+                    itemsStore.createIndex("by_lastModified", "lastModified", { unique: false });
+                    itemsStore.createIndex("by_syncStatus", "syncStatus", { unique: false });
+                }
+            };
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => {
+                console.error('IndexedDB error:', request.error?.message);
+                reject(request.error);
+            };
+        });
     }
 
-    // Opens the database, creating it if it doesn't exist.
-    private openDB(): void {
-        const request = indexedDB.open("SynchronizationDB", 1);
-    
-        // Event handler for the first-time creation or version upgrade needed for the database.
-        request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-            const db = (event.target as IDBOpenDBRequest).result;
-    
-            // Create an object store for items if it does not already exist.
-            if (!db.objectStoreNames.contains('items')) {
-                const itemsStore = db.createObjectStore("items", { keyPath: "id", autoIncrement: true });
-                
-                // Define indexes to improve query performance based on attributes.
-                itemsStore.createIndex("by_lastModified", "lastModified", { unique: false });
-                itemsStore.createIndex("by_syncStatus", "syncStatus", { unique: false });
-            }
-        };
-    
-        // Success event handler for when the database has been successfully opened.
-        request.onsuccess = (event: Event) => {
-            this.db = (event.target as IDBOpenDBRequest).result;
-            console.log("Database opened successfully.");
-        };
-    
-        // Error event handler for any errors encountered while opening the database.
-        request.onerror = (event: Event) => {
-            console.error("Database error: ", (event.target as IDBOpenDBRequest).error?.message);
-        };
+    public static getInstance(): IndexedDBUtil {
+        if (!IndexedDBUtil.instance) {
+            IndexedDBUtil.instance = new IndexedDBUtil();
+        }
+        return IndexedDBUtil.instance;
+    }
+
+    // Opens a transaction and returns the object store
+    private getObjectStore(storeName: string, mode: IDBTransactionMode): Promise<IDBObjectStore> {
+        return this.dbPromise.then(db => {
+            const transaction = db.transaction(storeName, mode);
+            return transaction.objectStore(storeName);
+        });
     }
 
     // Adds a new item to the "items" store.
-    public addItem(item: Item): void {
-        const transaction = this.db!.transaction(["items"], "readwrite");
-        const store = transaction.objectStore("items");
-        store.add(item);
+    public addItem(item: Item): Promise<IDBValidKey> {
+        return this.getObjectStore('items', 'readwrite').then(store => {
+            return new Promise<IDBValidKey>((resolve, reject) => {
+                const request = store.add(item);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        });
     }
 
     // Retrieves an item by its key from the "items" store.
-    public getItem(key: number): Promise<Item | undefined> {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(["items"], "readonly");
-            const store = transaction.objectStore("items");
-            const request = store.get(key);
-
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+    public getItem(key: number): Promise<Item> {
+        return this.getObjectStore('items', 'readonly').then(store => {
+            return new Promise<Item>((resolve, reject) => {
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     }
 
     // Updates an existing item in the "items" store.
-    public updateItem(item: Item): void {
-        const transaction = this.db!.transaction(["items"], "readwrite");
-        const store = transaction.objectStore("items");
-        store.put(item);
+    public updateItem(item: Item): Promise<void> {
+        return this.getObjectStore('items', 'readwrite').then(store => {
+            return new Promise<void>((resolve, reject) => {
+                const request = store.put(item);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        });
     }
 
     // Deletes an item from the "items" store by its key.
-    public deleteItem(key: number): void {
-        const transaction = this.db!.transaction(["items"], "readwrite");
-        const store = transaction.objectStore("items");
-        store.delete(key);
+    public deleteItem(key: number): Promise<void> {
+        return this.getObjectStore('items', 'readwrite').then(store => {
+            return new Promise<void>((resolve, reject) => {
+                const request = store.delete(key);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        });
     }
 }
+
+export { IndexedDBUtil, Item };

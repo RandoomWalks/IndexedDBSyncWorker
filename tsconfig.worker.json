@@ -1,20 +1,44 @@
+// {
+//     "compilerOptions": {
+//         "target": "es6",
+//         "module": "none", // Web workers do not support ES modules
+//         "lib": [
+//             "es2017",
+//             "webworker"
+//         ],
+//         "outDir": "./dist",
+//         "moduleResolution": "node",
+//         "strict": true,
+//         "noEmitOnError": true,
+//         "esModuleInterop": true
+//     },
+//     "include": [
+//         "./src/dbWorker.ts" // Specifically compile only the worker file
+//     ],
+//     "exclude": [
+//         "node_modules"
+//     ]
+// }
+
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "none", // Web workers do not support ES modules
-        "lib": [
-            "es2017",
-            "webworker"
-        ],
-        "outDir": "./dist",
+        "module": "ESNext", // Ensure this is compatible with how Webpack handles worker files
         "moduleResolution": "node",
+        "outDir": "./dist",
+        "lib": [
+            "ESNext",
+            "webworker"
+        ], // Include webworker lib instead of dom
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "strict": true,
-        "noEmitOnError": true,
-        "esModuleInterop": true
+        "noEmitOnError": false,
+        "sourceMap": true
     },
     "include": [
-        "./src/dbWorker.ts" // Specifically compile only the worker file
-    ],
+        "src/worker/**/*"
+    ], // Adjust this path to where your worker files are located
     "exclude": [
         "node_modules"
     ]
