@@ -1,9 +1,35 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -44,8 +70,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DatabaseService = void 0;
 var typedi_1 = require("typedi");
+var mongodb = __importStar(require("mongodb"));
 var DatabaseService = /** @class */ (function () {
-    function DatabaseService() {
+    // constructor() {
+    //   const url = process.env.DB_URL || 'mongodb://localhost:27017';
+    //   const dbName = process.env.DB_NAME || 'myDatabase';
+    //   this.client = new mongodb.MongoClient(url, {
+    //     poolSize: 10 // Configurable connection pool size
+    //   });
+    //   this.client.connect()
+    //     .then(() => {
+    //       console.log('Database connected.');
+    //       this.db = this.client.db(dbName);
+    //     })
+    //     .catch((error) => {
+    //       console.error('Database connection failed:', error);
+    //       this.reconnect(); // Attempt to reconnect
+    //     });
+    // }
+    function DatabaseService(url) {
+        // const url = process.env.DB_URL || 'mongodb://localhost:27017';
+        if (url === void 0) { url = process.env.DB_URL || 'mongodb://localhost:27017'; }
+        // MongoClient in v4.x and later handles connection pooling automatically with default settings
+        this.client = new mongodb.MongoClient(url);
     }
     DatabaseService.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -54,11 +101,8 @@ var DatabaseService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        console.log("Connecting to the database...");
-                        // Simulate database connection logic
-                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
+                        return [4 /*yield*/, this.client.connect()];
                     case 1:
-                        // Simulate database connection logic
                         _a.sent();
                         console.log("Database connected.");
                         return [3 /*break*/, 3];
@@ -71,8 +115,72 @@ var DatabaseService = /** @class */ (function () {
             });
         });
     };
+    DatabaseService.prototype.reconnect = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var error_2;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.client.connect()];
+                    case 1:
+                        _a.sent();
+                        console.log('Reconnected to database successfully.');
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_2 = _a.sent();
+                        console.log('Reconnection failed, retrying in 5 seconds...');
+                        setTimeout(function () { return _this.reconnect(); }, 5000);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    DatabaseService.prototype.getCollection = function (collectionName) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (!this.db) {
+                    throw new Error('Database not initialized');
+                }
+                return [2 /*return*/, this.db.collection(collectionName)];
+            });
+        });
+    };
+    // Example CRUD operation
+    DatabaseService.prototype.findOne = function (collectionName, query) {
+        return __awaiter(this, void 0, void 0, function () {
+            var collection;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getCollection(collectionName)];
+                    case 1:
+                        collection = _a.sent();
+                        return [2 /*return*/, collection.findOne(query)];
+                }
+            });
+        });
+    };
+    // Cleanup resources
+    DatabaseService.prototype.close = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.client) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.client.close()];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        });
+    };
     DatabaseService = __decorate([
-        (0, typedi_1.Service)()
+        (0, typedi_1.Service)(),
+        __metadata("design:paramtypes", [String])
     ], DatabaseService);
     return DatabaseService;
 }());

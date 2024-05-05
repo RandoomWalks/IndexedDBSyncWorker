@@ -5,41 +5,35 @@ import { DataSyncService } from "./DataSyncService";
 import { LoggerService } from "./LoggerService";
 
 @Service()
-export class SyncManager {
+class SyncManager {
   constructor(
     @Inject() private databaseService: DatabaseService,
     @Inject() private dataPreparationService: DataPreparationService,
     @Inject() private dataSyncService: DataSyncService,
     @Inject() private logger: LoggerService
-  ) {
-    console.log('[SyncManager] Constructor called');
-
-  }
+  ) {}
 
   async performSync() {
-    console.log('[SyncManager] Starting synchronization process');
     try {
-
+      this.logger.log("SyncManager: Starting the synchronization process.");
       await this.databaseService.connect();
-      console.log('[SyncManager] Database connected');
 
-      const data = this.dataPreparationService.prepareData();
-      console.log('[SyncManager] Data prepared:', data);
+      const rawData = await this.fetchData();
+      const preparedData = await this.dataPreparationService.prepareData(rawData);
 
-      this.dataSyncService.sync(data);
-      console.log('[SyncManager] Data synced successfully');
-
+      await this.dataSyncService.sync(preparedData);
+      this.logger.log("SyncManager: Data synchronization completed successfully.");
     } catch (error) {
-      if (error instanceof Error) {
-        console.log('[SyncManager] Error during synchronization:', error.message);
-
-        this.logger.log("Error during synchronization: " + error.message, 'error');
-      } else {
-        console.log('[SyncManager] An unexpected error occurred during synchronization');
-
-        this.logger.log("An unexpected error occurred during synchronization.", 'error');
-      }
+      this.logger.error(`SyncManager: Error during synchronization - ${(error as Error).message}`);
+      // Implement retry logic, notification to admins, or other error handling strategies here
     }
+  }
+
+  private async fetchData(): Promise<any[]> {
+    // Simulate fetching raw data that needs to be synchronized
+    this.logger.log("SyncManager: Fetching data for preparation...");
+    return new Promise(resolve => setTimeout(() => resolve([{ id: 1, data: 'Example' }]), 1000));
   }
 }
 
+export { SyncManager };

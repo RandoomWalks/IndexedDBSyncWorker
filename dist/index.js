@@ -36,22 +36,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
+require("reflect-metadata"); // Required for Typedi to use decorators
 var typedi_1 = require("typedi");
+var DatabaseService_1 = require("./DatabaseService");
+var DataPreparationService_1 = require("./DataPreparationService");
+var DataSyncService_1 = require("./DataSyncService");
 var SyncManager_1 = require("./SyncManager");
-function startSync() {
+var LoggerService_1 = require("./LoggerService");
+var ConflictResolver_1 = require("./ConflictResolver");
+function setup() {
     return __awaiter(this, void 0, void 0, function () {
-        var syncManager;
+        var syncManager, error_1, logger;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    // Register services with the container
+                    // Container.set(LoggerService, new LoggerService());
+                    typedi_1.Container.set(LoggerService_1.LoggerService, new LoggerService_1.LoggerService());
+                    typedi_1.Container.set(ConflictResolver_1.ConflictResolver, new ConflictResolver_1.ConflictResolver());
+                    typedi_1.Container.set(DataPreparationService_1.DataPreparationService, new DataPreparationService_1.DataPreparationService(typedi_1.Container.get(LoggerService_1.LoggerService)));
+                    typedi_1.Container.set(DataSyncService_1.DataSyncService, new DataSyncService_1.DataSyncService(typedi_1.Container.get(LoggerService_1.LoggerService), typedi_1.Container.get(ConflictResolver_1.ConflictResolver)));
+                    typedi_1.Container.set(DatabaseService_1.DatabaseService, new DatabaseService_1.DatabaseService());
                     syncManager = typedi_1.Container.get(SyncManager_1.SyncManager);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, syncManager.performSync()];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    logger = typedi_1.Container.get(LoggerService_1.LoggerService);
+                    logger.error("An error occurred during the synchronization process: " + error_1.message);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+function shutdown() {
+    return __awaiter(this, void 0, void 0, function () {
+        var logger, databaseService;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    logger = typedi_1.Container.get(LoggerService_1.LoggerService);
+                    databaseService = typedi_1.Container.get(DatabaseService_1.DatabaseService);
+                    return [4 /*yield*/, databaseService.close()];
                 case 1:
                     _a.sent();
+                    logger.log("Application shutdown gracefully.");
                     return [2 /*return*/];
             }
         });
     });
 }
-startSync();
+// Set up process listeners for graceful shutdown
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+// Start the application setup
+setup();

@@ -60,40 +60,44 @@ var SyncManager = /** @class */ (function () {
         this.dataPreparationService = dataPreparationService;
         this.dataSyncService = dataSyncService;
         this.logger = logger;
-        console.log('[SyncManager] Constructor called');
     }
     SyncManager.prototype.performSync = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, error_1;
+            var rawData, preparedData, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log('[SyncManager] Starting synchronization process');
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a.trys.push([0, 5, , 6]);
+                        this.logger.log("SyncManager: Starting the synchronization process.");
                         return [4 /*yield*/, this.databaseService.connect()];
-                    case 2:
+                    case 1:
                         _a.sent();
-                        console.log('[SyncManager] Database connected');
-                        data = this.dataPreparationService.prepareData();
-                        console.log('[SyncManager] Data prepared:', data);
-                        this.dataSyncService.sync(data);
-                        console.log('[SyncManager] Data synced successfully');
-                        return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.fetchData()];
+                    case 2:
+                        rawData = _a.sent();
+                        return [4 /*yield*/, this.dataPreparationService.prepareData(rawData)];
                     case 3:
+                        preparedData = _a.sent();
+                        return [4 /*yield*/, this.dataSyncService.sync(preparedData)];
+                    case 4:
+                        _a.sent();
+                        this.logger.log("SyncManager: Data synchronization completed successfully.");
+                        return [3 /*break*/, 6];
+                    case 5:
                         error_1 = _a.sent();
-                        if (error_1 instanceof Error) {
-                            console.log('[SyncManager] Error during synchronization:', error_1.message);
-                            this.logger.log("Error during synchronization: " + error_1.message, 'error');
-                        }
-                        else {
-                            console.log('[SyncManager] An unexpected error occurred during synchronization');
-                            this.logger.log("An unexpected error occurred during synchronization.", 'error');
-                        }
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
+                        this.logger.error("SyncManager: Error during synchronization - ".concat(error_1.message));
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/];
                 }
+            });
+        });
+    };
+    SyncManager.prototype.fetchData = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                // Simulate fetching raw data that needs to be synchronized
+                this.logger.log("SyncManager: Fetching data for preparation...");
+                return [2 /*return*/, new Promise(function (resolve) { return setTimeout(function () { return resolve([{ id: 1, data: 'Example' }]); }, 1000); })];
             });
         });
     };

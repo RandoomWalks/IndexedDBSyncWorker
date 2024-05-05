@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -7,9 +18,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -48,57 +56,59 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataPreparationService = void 0;
+exports.ConflictResolver = void 0;
 var typedi_1 = require("typedi");
-var LoggerService_1 = require("./LoggerService");
-var DataPreparationService = /** @class */ (function () {
-    function DataPreparationService(logger) {
-        this.logger = logger;
+var ConflictResolver = /** @class */ (function () {
+    function ConflictResolver(strategy) {
+        if (strategy === void 0) { strategy = 'merge'; }
+        this.strategy = strategy;
     }
-    DataPreparationService.prototype.prepareData = function (data) {
+    ConflictResolver.prototype.resolve = function (clientData, serverData) {
         return __awaiter(this, void 0, void 0, function () {
-            var preparedData, validData;
-            var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.logger.log('Starting data preparation');
-                        return [4 /*yield*/, Promise.all(data.map(function (item) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_a) {
-                                    // Simulate data validation and transformation
-                                    if (this.validateData(item)) {
-                                        return [2 /*return*/, this.transformData(item)];
-                                    }
-                                    else {
-                                        this.logger.log("Invalid data found: ".concat(JSON.stringify(item)), 'warn');
-                                        return [2 /*return*/, null]; // or handle the error as needed
-                                    }
-                                    return [2 /*return*/];
-                                });
-                            }); }))];
-                    case 1:
-                        preparedData = _a.sent();
-                        validData = preparedData.filter(function (item) { return item !== null; });
-                        this.logger.log("Data prepared with ".concat(validData.length, " valid entries out of ").concat(data.length));
-                        return [2 /*return*/, validData];
+                switch (this.strategy) {
+                    case 'client-wins':
+                        return [2 /*return*/, this.clientWins(clientData, serverData)];
+                    case 'server-wins':
+                        return [2 /*return*/, this.serverWins(clientData, serverData)];
+                    case 'merge':
+                        return [2 /*return*/, this.merge(clientData, serverData)];
+                    default:
+                        throw new Error("Unsupported resolution strategy: ".concat(this.strategy));
                 }
+                return [2 /*return*/];
             });
         });
     };
-    DataPreparationService.prototype.validateData = function (data) {
-        // Implement validation logic here
-        return true; // Simplified for demonstration
+    ConflictResolver.prototype.clientWins = function (clientData, serverData) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                // Client data overrides server data
+                return [2 /*return*/, clientData];
+            });
+        });
     };
-    DataPreparationService.prototype.transformData = function (data) {
-        // Implement transformation logic here
-        data.processed = true; // Simplified for demonstration
-        return data;
+    ConflictResolver.prototype.serverWins = function (clientData, serverData) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                // Server data overrides client data
+                return [2 /*return*/, serverData];
+            });
+        });
     };
-    DataPreparationService = __decorate([
+    ConflictResolver.prototype.merge = function (clientData, serverData) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                // Implement a sophisticated merge logic here
+                return [2 /*return*/, __assign(__assign(__assign({}, serverData), clientData), { resolvedAt: new Date().toISOString() // Include a timestamp for when the merge occurred
+                     })];
+            });
+        });
+    };
+    ConflictResolver = __decorate([
         (0, typedi_1.Service)(),
-        __param(0, (0, typedi_1.Inject)()),
-        __metadata("design:paramtypes", [LoggerService_1.LoggerService])
-    ], DataPreparationService);
-    return DataPreparationService;
+        __metadata("design:paramtypes", [String])
+    ], ConflictResolver);
+    return ConflictResolver;
 }());
-exports.DataPreparationService = DataPreparationService;
+exports.ConflictResolver = ConflictResolver;
