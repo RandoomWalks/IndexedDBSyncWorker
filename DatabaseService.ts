@@ -6,25 +6,6 @@ class DatabaseService {
   private client: mongodb.MongoClient;
   private db?: mongodb.Db;
 
-  // constructor() {
-  //   const url = process.env.DB_URL || 'mongodb://localhost:27017';
-  //   const dbName = process.env.DB_NAME || 'myDatabase';
-
-  //   this.client = new mongodb.MongoClient(url, {
-  //     poolSize: 10 // Configurable connection pool size
-  //   });
-
-  //   this.client.connect()
-  //     .then(() => {
-  //       console.log('Database connected.');
-  //       this.db = this.client.db(dbName);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Database connection failed:', error);
-  //       this.reconnect(); // Attempt to reconnect
-  //     });
-  // }
-
   constructor(url: string = process.env.DB_URL || 'mongodb://localhost:27017') {
     // const url = process.env.DB_URL || 'mongodb://localhost:27017';
 
