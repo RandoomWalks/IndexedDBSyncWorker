@@ -1,0 +1,24 @@
+
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "ESNext", // Ensure this is compatible with how Webpack handles worker files
+        "moduleResolution": "node",
+        "outDir": "./dist",
+        "lib": [
+            "ESNext",
+            "webworker"
+        ], // Include webworker lib instead of dom
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noEmitOnError": false,
+        "sourceMap": true
+    },
+    "include": [
+        "src/client/worker/**/*"
+    ], // Adjust this path to where your worker files are located
+    "exclude": [
+        "node_modules"
+    ]
+}

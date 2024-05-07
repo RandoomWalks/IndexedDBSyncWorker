@@ -1,0 +1,90 @@
+// {
+//     "compilerOptions": {
+//         "module": "commonjs",
+//         "esModuleInterop": true,
+//         "target": "es6",
+//         "noImplicitAny": true,
+//         "moduleResolution": "node",
+//         "sourceMap": true,
+//         "outDir": "dist",
+//         "baseUrl": "./",
+//         "types": [
+//             "jest"
+//         ], // Add this line if not already present
+//         "paths": {
+//             "*": [
+//                 "node_modules/*"
+//             ]
+//         }
+//     },
+//     "include": [
+//         // "src/**/*.ts",
+//         // "__mocks__/**/*.ts",
+//         // "__tests__/**/*.ts", // Ensure your test folder is included
+//         "**/*.test.ts",
+//         "**/*.ts",
+//         "global.d.ts"  // Include this line
+//     ],
+//     "exclude": [
+//         "node_modules"
+//     ]
+// }
+// {
+//     "compilerOptions": {
+//         "module": "ESNext", // Change module to ESNext for ESM support
+//         "esModuleInterop": true,
+//         "target": "es6",
+//         "noImplicitAny": true,
+//         "moduleResolution": "node",
+//         "sourceMap": true,
+//         "outDir": "dist",
+//         "baseUrl": "./",
+//         "types": ["jest"],
+//         "paths": {
+//             "*": ["node_modules/*"]
+//         }
+//     },
+//     "include": [
+//         "**/*.test.ts",
+//         "**/*.test.mts",
+//         "**/*.test.mjs",
+//         "**/*.ts",
+//         "global.d.ts"
+//     ],
+//     "exclude": [
+//         "node_modules"
+//     ]
+// }
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext", // Updated for consistency with module type
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "sourceMap": true, // Generate source maps for better debugging
+        "outDir": "./dist", // Output directory for compiled files
+        "baseUrl": "./", // Base directory for relative non-relative module imports
+        "types": [
+            "jest"
+        ], // Ensures Jest types are included
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "src/*"
+            ] // Adjusted to include 'src/*' if needed
+        }
+    },
+    "include": [
+        "**/*.test.ts", // Includes all TypeScript test files
+        "**/*.test.mts", // Includes all module TypeScript test files
+        "**/*.ts", // Includes all TypeScript files
+        "global.d.ts" // Includes global type definitions
+    ],
+    "exclude": [
+        "node_modules", // Excludes node_modules from compilation
+        "dist", // It's a good practice to exclude the output directory
+        "src/client/worker", // Explicitly exclude worker files
+
+    ]
+}

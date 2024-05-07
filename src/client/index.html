@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB with Web Worker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>IndexedDB with Web Worker Demo</h1>
+
+    <!-- Form for adding a new item -->
+    <form id="addItemForm">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" name="itemName" required>
+        <label for="itemValue">Item Value:</label>
+        <input type="text" id="itemValue" name="itemValue" required>
+        <button type="submit">Add New Item</button>
+    </form>
+
+    <!-- Input for getting an item by ID -->
+    <label for="itemId">Item ID:</label>
+    <input type="text" id="itemId" name="itemId" required>
+    <button id="getItemButton">Get Item</button>
+
+    <!-- Section for displaying messages to the user -->
+    <div id="message"></div>
+
+    <!-- Reference to external JS file -->
+    <script src="main.bundle.js" defer></script>
+</body>
+</html>
