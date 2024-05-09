@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "outDir": "./dist/server",
+        "strict": true,
+        "esModuleInterop": true,
+        "sourceMap": true
+    },
+    "include": ["src/server/**/*"],
+    "exclude": [
+        "node_modules",
+        "src/client/**/*",
+        "**/*.test.ts"
+    ] // Exclude node_modules
+}   

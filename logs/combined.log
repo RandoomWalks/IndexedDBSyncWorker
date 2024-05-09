@@ -1,0 +1,2 @@
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-07T21:59:35.832Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - Database connection failed","service":"user-service","timestamp":"2024-05-07T22:00:05.863Z"}
