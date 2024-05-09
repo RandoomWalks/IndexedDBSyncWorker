@@ -1,5 +1,5 @@
 // Assuming the existence of proper module imports and class definitions
-import { IndexedDBManager } from './Main'; // Adjust path as necessary
+import { IndexedDBManager } from './IndexedDBManager'; // Adjust path as necessary
 
 // Define a type for messages that are sent to the worker
 type WorkerMessageType = 'add' | 'getItems' | 'error';

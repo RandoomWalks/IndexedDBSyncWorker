@@ -1,107 +1,114 @@
-// import { IndexedDBManager } from '../Main';
-import { IndexedDBManager } from './Main';
+import { IndexedDBManager } from './IndexedDBManager';
 
-// Define or extend the global scope if needed for types
-// declare global {
-//   namespace NodeJS {
-//     interface Global {
-//       Worker: typeof Worker;
-//     }
-//   }
-// }
+// Tests for the IndexedDBManager class
+describe('IndexedDBManager', () => {
+  let indexedDBManager: IndexedDBManager;
+  let mockWorker: any;
 
-
-// mock the interface directly and provide custom implementations for its methods, you would use jest.fn()
-// if your IndexedDBManager class interacts with a Worker instance created from a module, you might use jest.mock() to mock the module containing the Worker class. 
-
-describe.only('IndexedDBManager', () => {
-  let IndexedDBManager_inst: IndexedDBManager;
-  let mockPostMessage: jest.Mock;  // Explicitly typing as jest.Mock
-  let mockAddEventListener: jest.Mock;  // Explicitly typing as jest.Mock
-  let mockTerminate: jest.Mock;  // Explicitly typing as jest.Mock
-  let mockOnmessage: jest.Mock;  // Explicitly typing as jest.Mock
-  let mockOnmessageerror: jest.Mock;  // Explicitly typing as jest.Mock
-
-  // A more detailed mock that adheres to the Worker interface
+  // Setup before each test
   beforeEach(() => {
-    mockPostMessage = jest.fn();
-    mockAddEventListener = jest.fn();
-    mockTerminate = jest.fn();
-    mockOnmessage = jest.fn();
-    mockOnmessageerror = jest.fn();
-
-    // Create a mock that adheres to the Worker interface
-    // class MockWorker {
-    //   constructor(stringUrl: string, options?: WorkerOptions) {
-    //     this.url = stringUrl;
-    //     this.options = options;
-    //   }
-
-    //   postMessage = mockPostMessage;
-    //   addEventListener = jest.fn();
-    //   terminate = jest.fn();
-    //   url: string;
-    //   options?: WorkerOptions;
-    // }
-
-    // // Assigning the Worker prototype if needed
-    // MockWorker.prototype = Object.create(Worker.prototype);
-
-    // global.Worker = MockWorker as any;
-
-
-    // Create a simple mock Worker object
-    const mockWorker = {
+    // Mock Worker setup
+    mockWorker = {
       postMessage: jest.fn(),
-      onmessage: jest.fn(),
-      onmessageerror: jest.fn(),
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
       terminate: jest.fn()
     };
+    // Overriding the global Worker with a mock
+    global.Worker = jest.fn(() => mockWorker);
 
-
-    // Spy on the methods of the Worker interface
-    const onmessageSpy = jest.spyOn(mockWorker, 'onmessage');
-    const onmessageerrorSpy = jest.spyOn(mockWorker, 'onmessageerror');
-    const postMessageSpy = jest.spyOn(mockWorker, 'postMessage');
-    const addEventListenerSpy = jest.spyOn(mockWorker, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(mockWorker, 'removeEventListener');
-    const terminateSpy = jest.spyOn(mockWorker, 'terminate');
-
-
-    test('Worker methods are called correctly', () => {
-      // Call a method of the Worker interface
-      mockWorker.postMessage('message');
-  
-      // Verify that the method was called with the correct parameters
-      expect(postMessageSpy).toHaveBeenCalledWith('message');
-  
-      // You can similarly test other methods of the Worker interface
-  });
-  
-    // Assign the mock Worker to the global object
-    global.Worker = jest.fn(() => mockWorker) as any;
-
-
-    IndexedDBManager_inst = new IndexedDBManager(new Worker('worker/IndexedDBWorker.js'));
+    // Initializing IndexedDBManager with the mocked Worker
+    indexedDBManager = new IndexedDBManager(new Worker('worker/IndexedDBWorker.js'));
+    console.log("IndexedDBManager initialized for testing.");
   });
 
-
+  // Test to verify that adding an item sends the correct message to the worker
   it('should send an add message to the worker', () => {
-    IndexedDBManager_inst.addItemToSet('exampleSet', 'testItem');
-    expect(mockPostMessage).toHaveBeenCalledWith({
+    indexedDBManager.addItemToSet('exampleSet', 'testItem');
+    expect(mockWorker.postMessage).toHaveBeenCalledWith({
       type: 'add',
       payload: { id: 'exampleSet', item: 'testItem' },
     });
+    console.log("Add message sent correctly.");
   });
 
+  // Test to verify that requesting items sends the correct message to the worker
   it('should send a getItems message to the worker', () => {
-    IndexedDBManager_inst.getItemsFromSet('exampleSet');
-    expect(mockPostMessage).toHaveBeenCalledWith({
+    indexedDBManager.getItemsFromSet('exampleSet');
+    expect(mockWorker.postMessage).toHaveBeenCalledWith({
       type: 'getItems',
       payload: { id: 'exampleSet' },
     });
+    console.log("GetItems message sent correctly.");
   });
 });
 
+// Additional test suite for error handling and data retrieval
+describe('IndexedDBManager Error and Data Handling', () => {
+  let indexedDBManager: IndexedDBManager;
+  let mockWorker: any;
+
+  // Setup before each test
+  beforeEach(() => {
+    // Detailed mock setup including event listeners
+    mockWorker = {
+      postMessage: jest.fn(),
+      addEventListener: jest.fn((event, handler) => {
+        if (event === 'message') {
+          mockWorker.onmessage = handler;
+        } else if (event === 'error') {
+          mockWorker.onerror = handler;
+        }
+      }),
+      removeEventListener: jest.fn(),
+      terminate: jest.fn(),
+      onmessage: jest.fn(),
+      onerror: jest.fn()
+    };
+    global.Worker = jest.fn(() => mockWorker);
+    indexedDBManager = new IndexedDBManager(new Worker('worker/IndexedDBWorker.js'));
+    console.log("IndexedDBManager initialized with detailed event handling for testing.");
+  });
+  
+  // Test to simulate worker initialization failure
+  it('should handle worker initialization failure', () => {
+    global.Worker = jest.fn(() => { throw new Error('Worker failed to initialize'); });
+    expect(() => new IndexedDBManager(new Worker('worker/IndexedDBWorker.js')))
+      .toThrow('Worker failed to initialize');
+    console.error("Handled worker initialization failure.");
+  });
+
+  // Test to verify error handling from the worker
+  it('should handle errors from the worker', () => {
+    const errorHandler = jest.fn();
+    indexedDBManager.onError(errorHandler);
+    const errorMessage = { message: 'Error from worker' };
+    mockWorker.onerror({ error: errorMessage });
+
+    expect(errorHandler).toHaveBeenCalledWith(errorMessage);
+    console.log("Error handling verified.");
+  });
+
+  // Test to verify correct data handling when items are received from the worker
+  it('should receive items from the worker and process them correctly', () => {
+    const processItems = jest.fn();
+    indexedDBManager.onItemsReceived(processItems); // Ensures handler is set before the event
+
+    const testData = { type: 'items', id: 'exampleSet', items: ['item1', 'item2'] };
+    mockWorker.onmessage({ data: testData });
+
+    expect(processItems).toHaveBeenCalledWith(['item1', 'item2'], 'exampleSet');
+    console.log("Data received and processed correctly.");
+  });
+
+  // Test to verify handling of empty data set from the worker
+  it('should send a getItems message to the worker and handle empty data', () => {
+    const processItems = jest.fn();
+    indexedDBManager.onItemsReceived(processItems); // Ensures handler is set before the event
+
+    mockWorker.onmessage({ data: { type: 'items', id: 'exampleSet', items: [] } });
+
+    expect(processItems).toHaveBeenCalledWith([], 'exampleSet');
+    console.log("Empty data set handled correctly.");
+  });
+});

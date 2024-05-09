@@ -44,10 +44,20 @@ async function mergeSets(id: string, otherSetItems: any[]): Promise<void> {
 }
 
 // Function to retrieve items from a GSet
-function getItems(id: string): any[] | undefined {
+function getItemsWorker(id: string): any[] | undefined {
     console.debug(`Fetching items from set with ID: ${id}`);
     let gSet = sets.get(id);
     return gSet ? gSet.getItems() : undefined;
+}
+
+// Function to retrieve items from a GSet
+async function getIDBItems(id: string) {
+    console.debug(`Fetching items from set with ID: ${id}`);
+    let resp = await dbUtil.getSet(id);
+    console.debug(`getIDBItems(): ${resp} with id:`, id);
+
+    // let gSet = sets.get(id);
+    // return gSet ? gSet.getItems() : undefined;
 }
 
 // Event handler for messages received from the main thread
@@ -69,7 +79,8 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
                 }
                 break;
             case 'getItems':
-                const items = getItems(payload.id);
+                getIDBItems(payload.id);
+                const items = getItemsWorker(payload.id);
                 self.postMessage({ type: 'items', id: payload.id, items });
                 console.debug(`Post message: items fetched for ID ${payload.id}`, items);
                 break;

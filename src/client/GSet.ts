@@ -27,7 +27,7 @@ export class GSet<T> {
         const newItems = new Set(this.items);
         for (const item of otherSet.getItems()) {
             newItems.add(item);
-        }f
+        }
         console.log(`Merging sets. Current set: ${JSON.stringify(this.getItems())}, Merged set: ${JSON.stringify(Array.from(newItems))}`);
         return new GSet(newItems);
     }

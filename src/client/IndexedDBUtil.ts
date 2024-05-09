@@ -116,6 +116,22 @@ class IndexedDBUtil {
         });
     }
 
+    public async getSet(id: string): Promise<Item> {
+        console.debug(`Retrieving item from IndexedDB with key: ${id}`);
+        const store = await this.getObjectStore('items', 'readonly');
+        return new Promise<Item>((resolve, reject) => {
+            const request = store.get(id);
+            request.onsuccess = () => {
+                console.debug(`Item retrieved successfully:`, request.result);
+                resolve(request.result);
+            };
+            request.onerror = () => {
+                console.error("Error retrieving item from IndexedDB:", request.error);
+                reject(request.error);
+            };
+        });
+    }
+
     public async deleteItem(key: number): Promise<void> {
         console.debug(`Deleting item from IndexedDB with key: ${key}`);
         const store = await this.getObjectStore('items', 'readwrite');
