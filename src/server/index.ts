@@ -86,3 +86,5 @@ process.on('SIGTERM', shutdown);
 
 // Uncomment to start the setup process when needed.
 // setup();
+
+export default app;

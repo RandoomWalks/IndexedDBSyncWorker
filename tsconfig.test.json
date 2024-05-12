@@ -55,6 +55,7 @@
 //         "node_modules"
 //     ]
 // }
+
 {
     "compilerOptions": {
         "module": "ESNext",
@@ -71,15 +72,18 @@
         "paths": {
             "*": [
                 "node_modules/*",
-                "src/*"
-            ] // Adjusted to include 'src/*' if needed
+                "src/*",
+                "dist/*"
+            ]
         }
     },
     "include": [
+        "src/**/*",
         "**/*.test.ts", // Includes all TypeScript test files
         "**/*.test.mts", // Includes all module TypeScript test files
         "**/*.ts", // Includes all TypeScript files
-        "global.d.ts" // Includes global type definitions
+        "global.d.ts", // Includes global type definitions
+        "src/__tests__/**/*.ts" // Include test files in src/tests directory
     ],
     "exclude": [
         "node_modules", // Excludes node_modules from compilation
