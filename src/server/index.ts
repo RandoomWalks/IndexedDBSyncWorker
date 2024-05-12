@@ -8,86 +8,81 @@ import { SyncManager } from "./SyncManager";
 import { LoggerService } from "./LoggerService";
 import { ConflictResolver } from "./ConflictResolver";
 
-
-// Instantiate Logger
+// Instantiate the logger service for application-wide logging.
 const logger = new LoggerService();
 
-// Instantiate other services with dependencies injected
+// Create instances of services with appropriate dependencies injected, enabling decoupled architecture and easier testing.
 const databaseService = new DatabaseService(logger);
 const conflictResolver = new ConflictResolver(logger);
 const dataPreparationService = new DataPreparationService(logger);
 const dataSyncService = new DataSyncService(logger, conflictResolver);
 
-// Instantiate SyncManager with all required services
+// Centralized SyncManager coordinates complex synchronization tasks across services.
 const syncManager = new SyncManager(databaseService, dataPreparationService, dataSyncService, logger);
 
-
+// Initialize the Express application.
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors()); // Enable CORS
-app.use(bodyParser.json());
+// Middleware setup
+app.use(cors()); // Enables Cross-Origin Resource Sharing for all routes.
+app.use(bodyParser.json()); // Parses incoming requests with JSON payloads.
 
-// Sample route
+// Sample route to demonstrate data fetching.
 app.get('/api/data', (req, res) => {
   res.json({ message: "Successfully fetched data", data: ["Item1", "Item2"] });
 });
 
-// Define routes
+// Route to trigger the synchronization process manually via HTTP POST request.
 app.post('/sync', async (req, res) => {
   try {
-    console.log("Triggering synchronization process...");
-    await syncManager.performSync();
+    logger.log("Triggering synchronization process...");
+    await syncManager.performSync(); // Execute synchronization.
     res.status(200).send('Synchronization completed successfully.');
   } catch (error) {
+    logger.error('Failed to complete synchronization: ' + (error as Error).message);
     res.status(500).send('Failed to complete synchronization: ' + (error as Error).message);
   }
 });
 
+// Start the server on the specified port.
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  logger.log(`Server running on http://localhost:${port}`);
 });
 
-
 /**
- * Sets up and initializes all necessary services and the synchronization manager.
- * It handles the registration of services within the Typedi container and initiates the synchronization process.
+ * Initializes all necessary services and starts the synchronization manager.
+ * This function handles the orchestration of service setup and begins the synchronization process.
  */
 async function setup() {
-
   try {
-    console.log("(Index.ts): Starting synchronization process...");
+    logger.log("(Index.ts): Starting synchronization process...");
     await syncManager.performSync();
-    console.log("(Index.ts): Synchronization process completed.");
-
+    logger.log("(Index.ts): Synchronization process completed.");
   } catch (error) {
-    console.error("(Index.ts): An error occurred during the synchronization process: " + (error as Error).message);
+    logger.error("(Index.ts): An error occurred during the synchronization process: " + (error as Error).message);
   }
 }
 
 /**
- * Handles application shutdown, ensuring that all resources are properly cleaned up.
- * This function is triggered on signals for process termination.
+ * Handles application shutdown by ensuring all resources are properly cleaned up.
+ * This function is crucial for graceful termination of services during application shutdown.
  */
 async function shutdown() {
   try {
-
-    console.log("(Index.ts): Shutting down application...");
-
-    // Perform necessary cleanup and resource release.
-    await databaseService.close();
-    console.log("(Index.ts): Application shutdown gracefully.");
+    logger.log("(Index.ts): Shutting down application...");
+    await databaseService.close(); // Close database connections.
+    logger.log("(Index.ts): Application shutdown gracefully.");
   } catch (error) {
-    console.error("(Index.ts): An error occurred during application shutdown: " + (error as Error).message);
+    logger.error("(Index.ts): An error occurred during application shutdown: " + (error as Error).message);
   } finally {
-    // Ensure process exits even if shutdown fails
-    process.exit(0);
+    process.exit(0); // Ensures the process exits regardless of shutdown success.
   }
 }
 
-// Set up process listeners for graceful shutdown. These listeners handle cleanup when the process is interrupted.
+// Register process event listeners to handle graceful shutdown on signals like SIGINT or SIGTERM.
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-// Start the application setup
-// setup();  
+// Uncomment to start the setup process when needed.
+// setup();

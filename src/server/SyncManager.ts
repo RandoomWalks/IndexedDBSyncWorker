@@ -4,12 +4,13 @@ import { DataSyncService } from "./DataSyncService";
 import { LoggerService } from "./LoggerService";
 
 /**
- * The SyncManager class is responsible for coordinating the various stages of data synchronization.
- * It handles the orchestration of connecting to the database, fetching and preparing data,
- * and performing the synchronization itself. It uses dependency injection to manage its dependencies.
+ * The SyncManager class orchestrates the process of data synchronization across different services.
+ * It integrates operations from database connectivity to data preparation and final synchronization.
+ * Dependency injection is employed to decouple the class from concrete implementations of its dependencies,
+ * facilitating easier maintenance and testing.
  */
 class SyncManager {
-  // Dependency injection via constructor to handle database operations, data preparation, synchronization, and logging.
+  // Properties are injected through the constructor, enabling loose coupling and easier unit testing.
   constructor(
     private databaseService: DatabaseService,
     private dataPreparationService: DataPreparationService,
@@ -18,45 +19,42 @@ class SyncManager {
   ) { }
 
   /**
-   * Main method to perform synchronization. It manages the flow of data from fetching raw data,
-   * preparing it, and finally synchronizing it to a remote service or database.
+   * Coordinates the entire data synchronization workflow, from fetching data, preparing it,
+   * to syncing with a remote server or database. It handles both the operational logic and error management.
    */
   async performSync() {
     try {
-      // Logging the start of the synchronization process
-      console.log("(SyncManager): Starting the synchronization process.");
-      // Connecting to the database before any data operation
-      await this.databaseService.connect();
-      console.log("(SyncManager): Connected to MongoDB");
+      this.logger.log("Starting the synchronization process."); // Improved logging using a dedicated service.
+      await this.databaseService.connect(); // Establish a connection to the database.
+      this.logger.log("Connected to MongoDB");
 
+      // Retrieve a specific collection to work with.
       const collection = this.databaseService.getCollection("items");
-      console.log(collection)
+      this.logger.log(`Working with collection: ${collection}`);
 
-      // Fetching and preparing data for synchronization
+      // Fetch raw data, prepare it for synchronization, and then sync.
       const rawData = await this.fetchData();
       const preparedData = await this.dataPreparationService.prepareData(rawData);
-
-      // Performing the actual synchronization
       await this.dataSyncService.sync(preparedData);
-      // Logging successful completion of synchronization
-      console.log("(SyncManager): Data synchronization completed successfully.");
+      this.logger.log("Data synchronization completed successfully.");
     } catch (error) {
-      // Handling errors that may occur during the synchronization process
-      console.error(`(SyncManager): Error during synchronization - ${(error as Error).message}`);
-      // Additional error handling strategies can be implemented here
+      // Generic error handling and logging the specific error message.
+      this.logger.error(`Error during synchronization - ${(error as Error).message}`);
+      // Here, strategies such as retry mechanisms or alerts can be implemented.
     } finally {
+      // Ensure the database connection is closed even if an error occurs.
       await this.databaseService.close();
+      this.logger.log("Database connection closed.");
     }
   }
 
   /**
-   * Fetches raw data that will be prepared and synchronized.
-   * This is a simulation of an asynchronous data fetch, such as querying a database or an external API.
+   * Simulates fetching data from a database or external API.
+   * This method showcases a placeholder for more complex data retrieval logic.
    */
   private async fetchData(): Promise<any[]> {
-    // Logging the fetching operation
-    console.log("(SyncManager): Fetching data for preparation...");
-    // Simulating a delay in fetching data
+    this.logger.log("Fetching data for preparation...");
+    // Delay simulates network or database latency.
     return new Promise(resolve => setTimeout(() => resolve([{ id: 1, data: 'Example' }]), 1000));
   }
 }
