@@ -1,59 +1,15 @@
-// IndexedDBManager manages communication with the web worker responsible for IndexedDB operations. This setup allows main thread to interact with IndexedDB through the web worker
+// Main.ts
 import { App } from './App';
-import { IndexedDBManager } from './IndexedDBManager';
 
 
-// export class IndexedDBManager {
-//     private dbWorker: Worker;
+// Changes Made:
+// Remove Direct Worker Management: The direct creation and management of IndexedDBManager and workers are removed from Main.ts and encapsulated within the App or potentially the Mediator.
 
-//     constructor(worker: Worker) {
-//         this.dbWorker = worker;
-//         this.setupMessageHandler();
-//         console.debug("IndexedDBManager initialized with worker.");
-//     }
+// Single Responsibility: Main.ts is now solely responsible for bootstrapping the application, adhering to the Single Responsibility Principle. It starts the app once the DOM is fully loaded, reducing any direct involvement in the app's logic.
 
-//     private setupMessageHandler() {
-//         this.dbWorker.onmessage = (event: MessageEvent) => {
-//             console.debug(`Received message from worker:`, event.data);
-//             if (event.data.type === 'items') {
-//                 console.log(`Items in set ${event.data.id}:`, event.data.items);
-//             } else if (event.data.type === 'merge') {
-//                 console.log(`Merge result for set ${event.data.id}:`, event.data.mergeRes);
-//             } else if (event.data.type === 'added') {
-//                 console.log(`Addition confirmed for set ${event.data.id}`);
-//             }
-//         };
-//     }
-//     // Public method to allow clients to provide their own message handler
-//     onMessage(handler: (event: MessageEvent) => void) {
-//         this.dbWorker.onmessage = handler;
-//     }
-
-//     addItemToSet(setId: string, item: string) {
-//         const message = { type: 'add', payload: { id: setId, item } };
-//         this.dbWorker.postMessage(message);
-//         console.debug(`Sending 'add' message to worker for set ${setId} with item:`, item);
-//     }
-
-//     getItemsFromSet(setId: string) {
-//         const message = { type: 'getItems', payload: { id: setId } };
-//         this.dbWorker.postMessage(message);
-//         console.debug(`Sending 'getItems' message to worker for set ${setId}`);
-//     }
-// }
-
-// Create an instance of the IndexedDBManager
-//  path needs to be relative to the location where your HTML file is served from,  not necessarily the directory structure on your server or development environment.
+// Initialization Flow: It only initializes the App, which will handle all further setups, including creating the Mediator and IndexedDBManager. This maintains a clean entry point and ensures that the application’s setup is modular and testable.
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Instantiate the app when the DOM is fully loaded
-    // document.addEventListener('DOMContentLoaded', () => new App());
-
-    new App();  // Start the application
-
-    const worker = new Worker('dbWorker.bundle.js');
-    const indexedDBManager = new IndexedDBManager(worker);
-    indexedDBManager.addItemToSet('exampleSet', 'Hello');
-    // indexedDBManager.getItemsFromSet('exampleSet');
+    // Create an instance of the App, which internally creates and manages the Mediator and IndexedDBManager.
+    new App();
 });

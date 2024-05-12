@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import { DatabaseService } from "./DatabaseService";
 import { DataPreparationService } from "./DataPreparationService";
@@ -24,7 +25,13 @@ const syncManager = new SyncManager(databaseService, dataPreparationService, dat
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
+
+// Sample route
+app.get('/api/data', (req, res) => {
+  res.json({ message: "Successfully fetched data", data: ["Item1", "Item2"] });
+});
 
 // Define routes
 app.post('/sync', async (req, res) => {
@@ -38,7 +45,7 @@ app.post('/sync', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 

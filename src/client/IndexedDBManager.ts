@@ -1,7 +1,10 @@
 export class IndexedDBManager {
     private dbWorker: Worker;
-    private errorHandler: (error: any) => void;
-    private itemsReceivedHandler: (items: any, setId: string) => void;
+    private messageHandler!: (error: any) => void;
+    private errorHandler!: (error: any) => void;
+    private itemsReceivedHandler!: (items: any, setId: string) => void;
+
+    // onmessage: (event: MessageEvent) => void;
 
     constructor(worker: Worker) {
         this.dbWorker = worker;
@@ -46,7 +49,12 @@ export class IndexedDBManager {
     onError(handler: (error: any) => void) {
         this.errorHandler = handler;
     }
+    // Public method to set a custom error handler
+    onMessage(handler: (error: any) => void) {
+        this.messageHandler = handler;
+    }
 
+    
     // Public method to set a custom handler for received items
     onItemsReceived(handler: (items: any, setId: string) => void) {
         this.itemsReceivedHandler = handler;

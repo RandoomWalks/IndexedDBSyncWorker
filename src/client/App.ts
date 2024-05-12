@@ -1,88 +1,73 @@
-// Assuming the existence of proper module imports and class definitions
-import { IndexedDBManager } from './IndexedDBManager'; // Adjust path as necessary
-
-// Define a type for messages that are sent to the worker
-type WorkerMessageType = 'add' | 'getItems' | 'error';
-
-// Define the structure for messages sent to the worker
-interface WorkerMessage {
-    type: WorkerMessageType;
-    payload: { id: string; item?: string; items?: string[]; error?: string };
-}
+// App.ts
+import { Mediator } from './Mediator';
 
 export class App {
-    private indexedDBManager: IndexedDBManager;
+    private mediator: Mediator;
     private messageDiv: HTMLDivElement;
 
     constructor() {
-        const worker = new Worker('dbWorker.bundle.js');
-        this.indexedDBManager = new IndexedDBManager(worker);
-
-        this.indexedDBManager.onItemsReceived(this.displayItems);
-        this.indexedDBManager.onError(this.displayError);
-
+        this.mediator = new Mediator();
         this.messageDiv = document.getElementById('message') as HTMLDivElement;
-        console.debug("App initialized, setting up UI.");
         this.initializeUI();
     }
 
-    displayItems = (items: any, setId: string) => {
-        const message = `Items in set ${setId}: ${JSON.stringify(items)}`;
-        this.displayMessage(message);
-    }
-
-    displayError = (error: string) => {
-        this.displayMessage(`Error: ${error}`, true);
-    }
-
-    private initializeUI(): void {
+    private initializeUI() {
         document.getElementById('addItemForm')?.addEventListener('submit', this.handleAddItem);
         document.getElementById('getItemButton')?.addEventListener('click', this.handleGetItems);
+        document.addEventListener('itemsReceived', this.handleItemsReceived as EventListener);
+        document.addEventListener('errorOccurred', this.handleErrorOccurred as EventListener);
+        document.getElementById('fetchDataButton')?.addEventListener('click', this.fetchData);
 
-        // Set up the event handler for messages received from the worker
-        this.indexedDBManager.onMessage((event: MessageEvent) => {
-            const data = event.data;
-            console.log("Message received from IndexedDBManager:", data);
-            if (data.type === 'getItems') {
-                this.displayMessage(`Items: ${JSON.stringify(data.items)}`);
-            } else if (data.type === 'error') {
-                this.displayMessage(`Error: ${data.error}`, true);
-            }
-        });
+    }
+    private fetchData() {
+        console.log("Fetching data from http://localhost:3000/api/data...");
+        fetch('http://localhost:3000/api/data')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data fetched successfully:", data);
+                document.getElementById('dataDisplay')!.textContent = JSON.stringify(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 
-    private handleAddItem = (event: Event): void => {
+    private handleAddItem = (event: Event) => {
         event.preventDefault();
-        const setName = 'exampleSet'; // Should be dynamic based on application's needs
-        const itemName = (document.getElementById('itemName') as HTMLInputElement).value.trim();
-        const itemValue = (document.getElementById('itemValue') as HTMLInputElement).value.trim();
-        this.indexedDBManager.addItemToSet(setName, itemName);
+        const setName = 'exampleSet';
+        const itemName = (document.getElementById('itemName') as HTMLInputElement)?.value;
+        console.log(`Attempting to add item "${itemName}" to set "${setName}"`);
+        this.mediator.addItemToSet(setName, itemName);
         this.displayMessage('Adding item...');
-        console.debug(`Add item form submitted for set ${setName} with item name ${itemName} and value ${itemValue}`);
     }
 
-    private handleGetItems = (event: Event): void => {
-        const setName = 'exampleSet'; // This could be dynamic based on application's needs
-        this.indexedDBManager.getItemsFromSet(setName);
+    private handleGetItems = () => {
+        const setName = 'exampleSet';
+        console.log(`Fetching items from set "${setName}"`);
+        this.mediator.getItemsFromSet(setName);
         this.displayMessage('Fetching items...');
-        console.debug(`Get items button clicked for set ${setName}`);
-
     }
 
-    displayMessage(message: string, isError: boolean = false) {
-        const messageDiv = document.getElementById('message') as HTMLDivElement;
-        messageDiv.textContent = message;
-        messageDiv.className = isError ? 'error' : 'info';
+    private handleItemsReceived = (event: CustomEvent) => {
+        const { items, setId } = event.detail;
+        console.log(`Received items from set "${setId}":`, items);
+        this.displayMessage(`Items in set ${setId}: ${JSON.stringify(items)}`);
     }
 
-    // private displayMessage(message: string, isError: boolean = false): void {
-    //     this.messageDiv.textContent = message;
-    //     if (isError) {
-    //         this.messageDiv.classList.add('error'); // Make sure the 'error' class is defined in your CSS
-    //         console.error("Display error message:", message);
-    //     } else {
-    //         this.messageDiv.classList.remove('error');
-    //         console.log("Display message:", message);
-    //     }
-    // }
+    private handleErrorOccurred = (event: CustomEvent) => {
+        console.error('An error occurred:', event.detail);
+        this.displayMessage(`Error: ${event.detail}`, true);
+    }
+
+    private displayMessage(message: string, isError: boolean = false) {
+        this.messageDiv.textContent = message;
+        if (isError) {
+            this.messageDiv.classList.add('error');
+        } else {
+            this.messageDiv.classList.remove('error');
+        }
+    }
 }
