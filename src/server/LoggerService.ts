@@ -1,16 +1,20 @@
-import { Service } from "typedi";
 import * as winston from "winston";
 import * as os from "os";
+import * as dotenv from 'dotenv';
+
 
 /**
  * Service class for handling logging throughout the application.
  * This service uses winston for logging with different transports based on the environment.
  */
-@Service()
 class LoggerService {
   private logger!: winston.Logger; // Use definite assignment assertion as the logger is initialized in configureLogger
 
   constructor() {
+    // Load environment variables from .env file into process.env
+    dotenv.config();
+    console.log(process.env.NODE_ENV); // This will log 'development'
+
     this.configureLogger();
   }
 
@@ -18,6 +22,8 @@ class LoggerService {
    * Configures the logger with appropriate transports and settings depending on the environment.
    */
   private configureLogger() {
+    console.log("Configuring logger..."); // Add configuration log
+
     // Combine multiple formatting options for logging
     const logFormat = winston.format.combine(
       winston.format.timestamp(), // Add timestamp to each log entry
@@ -29,10 +35,15 @@ class LoggerService {
 
     // Use console logging for non-production environments for easier debugging
     if (process.env.NODE_ENV !== 'production') {
-      transports.push(new winston.transports.Console({
-        format: winston.format.simple(), // Simple format for console output
-      }));
+      console.log("process.env.NODE_ENV !== 'production')"); // Add configuration log
+
+      transports.push(
+        new winston.transports.Console({
+          format: winston.format.simple(), // Simple format for console output
+        }));
     } else {
+      console.log("process.env.NODE_ENV === 'production')"); // Add configuration log
+
       // In production, log errors separately and combined logs for general information
       transports.push(new winston.transports.File({ filename: 'logs/error.log', level: 'error' }));
       transports.push(new winston.transports.File({ filename: 'logs/combined.log' }));
@@ -45,9 +56,13 @@ class LoggerService {
       defaultMeta: { service: 'user-service', hostname: os.hostname() }, // Metadata to include with every log
       transports
     });
+    console.log("Logger configured successfully."); // Add configuration success log
+
   }
 
   log(message: string, level: string = 'info') {
+    console.log(`Logging message: ${message}, Level: ${level}`); // Add log message
+
     this.logger.log({ level, message });
   }
 

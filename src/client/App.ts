@@ -17,9 +17,22 @@ export class App {
     constructor() {
         const worker = new Worker('dbWorker.bundle.js');
         this.indexedDBManager = new IndexedDBManager(worker);
+
+        this.indexedDBManager.onItemsReceived(this.displayItems);
+        this.indexedDBManager.onError(this.displayError);
+
         this.messageDiv = document.getElementById('message') as HTMLDivElement;
         console.debug("App initialized, setting up UI.");
         this.initializeUI();
+    }
+
+    displayItems = (items: any, setId: string) => {
+        const message = `Items in set ${setId}: ${JSON.stringify(items)}`;
+        this.displayMessage(message);
+    }
+
+    displayError = (error: string) => {
+        this.displayMessage(`Error: ${error}`, true);
     }
 
     private initializeUI(): void {
@@ -56,14 +69,20 @@ export class App {
 
     }
 
-    private displayMessage(message: string, isError: boolean = false): void {
-        this.messageDiv.textContent = message;
-        if (isError) {
-            this.messageDiv.classList.add('error'); // Make sure the 'error' class is defined in your CSS
-            console.error("Display error message:", message);
-        } else {
-            this.messageDiv.classList.remove('error');
-            console.log("Display message:", message);
-        }
+    displayMessage(message: string, isError: boolean = false) {
+        const messageDiv = document.getElementById('message') as HTMLDivElement;
+        messageDiv.textContent = message;
+        messageDiv.className = isError ? 'error' : 'info';
     }
+
+    // private displayMessage(message: string, isError: boolean = false): void {
+    //     this.messageDiv.textContent = message;
+    //     if (isError) {
+    //         this.messageDiv.classList.add('error'); // Make sure the 'error' class is defined in your CSS
+    //         console.error("Display error message:", message);
+    //     } else {
+    //         this.messageDiv.classList.remove('error');
+    //         console.log("Display message:", message);
+    //     }
+    // }
 }

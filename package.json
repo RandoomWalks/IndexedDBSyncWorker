@@ -38,6 +38,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "mongodb": "^6.6.0",
     "reflect-metadata": "^0.2.2",
     "typedi": "^0.10.0",

@@ -1,5 +1,3 @@
-import "reflect-metadata"; // Required for Typedi to use decorators
-import { Container } from "typedi";
 import { DatabaseService } from "./DatabaseService";
 import { DataPreparationService } from "./DataPreparationService";
 import { DataSyncService } from "./DataSyncService";
@@ -7,29 +5,32 @@ import { SyncManager } from "./SyncManager";
 import { LoggerService } from "./LoggerService";
 import { ConflictResolver } from "./ConflictResolver";
 
+
+// Instantiate Logger
+const logger = new LoggerService();
+
+// Instantiate other services with dependencies injected
+const databaseService = new DatabaseService(logger);
+const conflictResolver = new ConflictResolver(logger);
+const dataPreparationService = new DataPreparationService(logger);
+const dataSyncService = new DataSyncService(logger, conflictResolver);
+
+// Instantiate SyncManager with all required services
+const syncManager = new SyncManager(databaseService, dataPreparationService, dataSyncService, logger);
+
 /**
  * Sets up and initializes all necessary services and the synchronization manager.
  * It handles the registration of services within the Typedi container and initiates the synchronization process.
  */
 async function setup() {
-  // Register individual services with the container. This setup ensures that each service
-  // can be properly injected with its dependencies wherever needed.
-  Container.set(LoggerService, new LoggerService());
-  Container.set(ConflictResolver, new ConflictResolver());
-
-  // Explicitly setting dependencies for services that require other services.
-  Container.set(DataPreparationService, new DataPreparationService(Container.get(LoggerService)));
-  Container.set(DataSyncService, new DataSyncService(Container.get(LoggerService), Container.get(ConflictResolver)));
-  Container.set(DatabaseService, new DatabaseService());
-
-  // Retrieving an instance of SyncManager from the container to start the synchronization process.
-  const syncManager = Container.get(SyncManager);
 
   try {
+    console.log("(Index.ts): Starting synchronization process...");
     await syncManager.performSync();
+    console.log("(Index.ts): Synchronization process completed.");
+
   } catch (error) {
-    const logger = Container.get(LoggerService);
-    logger.error("An error occurred during the synchronization process: " + (error as Error).message);
+    console.error("(Index.ts): An error occurred during the synchronization process: " + (error as Error).message);
   }
 }
 
@@ -38,12 +39,19 @@ async function setup() {
  * This function is triggered on signals for process termination.
  */
 async function shutdown() {
-  const logger = Container.get(LoggerService);
-  const databaseService = Container.get(DatabaseService);
+  try {
 
-  // Perform necessary cleanup and resource release.
-  await databaseService.close();
-  logger.log("Application shutdown gracefully.");
+    console.log("(Index.ts): Shutting down application...");
+
+    // Perform necessary cleanup and resource release.
+    await databaseService.close();
+    console.log("(Index.ts): Application shutdown gracefully.");
+  } catch (error) {
+    console.error("(Index.ts): An error occurred during application shutdown: " + (error as Error).message);
+  } finally {
+    // Ensure process exits even if shutdown fails
+    process.exit(0);
+  }
 }
 
 // Set up process listeners for graceful shutdown. These listeners handle cleanup when the process is interrupted.
@@ -51,4 +59,4 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 // Start the application setup
-setup();
+setup();  

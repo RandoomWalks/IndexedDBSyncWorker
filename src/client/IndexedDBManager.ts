@@ -17,7 +17,7 @@ export class IndexedDBManager {
                 case 'items':
                     console.log(`Items in set ${event.data.id}:`, event.data.items);
                     if (this.itemsReceivedHandler) {
-                        this.itemsReceivedHandler(event.data.items, event.data.id);
+                        this.itemsReceivedHandler?.(event.data.items, event.data.id);
                     }
                     break;
                 case 'merge':
@@ -28,7 +28,7 @@ export class IndexedDBManager {
                     break;
                 case 'error':
                     if (this.errorHandler) {
-                        this.errorHandler(event.data.error);
+                        this.errorHandler?.(event.data.error);
                     }
                     break;
             }

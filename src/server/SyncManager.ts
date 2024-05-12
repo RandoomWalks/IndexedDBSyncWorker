@@ -1,4 +1,3 @@
-import { Service, Inject } from "typedi";
 import { DatabaseService } from "./DatabaseService";
 import { DataPreparationService } from "./DataPreparationService";
 import { DataSyncService } from "./DataSyncService";
@@ -9,15 +8,14 @@ import { LoggerService } from "./LoggerService";
  * It handles the orchestration of connecting to the database, fetching and preparing data,
  * and performing the synchronization itself. It uses dependency injection to manage its dependencies.
  */
-@Service()
 class SyncManager {
   // Dependency injection via constructor to handle database operations, data preparation, synchronization, and logging.
   constructor(
-    @Inject() private databaseService: DatabaseService,
-    @Inject() private dataPreparationService: DataPreparationService,
-    @Inject() private dataSyncService: DataSyncService,
-    @Inject() private logger: LoggerService
-  ) {}
+    private databaseService: DatabaseService,
+    private dataPreparationService: DataPreparationService,
+    private dataSyncService: DataSyncService,
+    private logger: LoggerService
+  ) { }
 
   /**
    * Main method to perform synchronization. It manages the flow of data from fetching raw data,
@@ -26,9 +24,13 @@ class SyncManager {
   async performSync() {
     try {
       // Logging the start of the synchronization process
-      this.logger.log("SyncManager: Starting the synchronization process.");
+      console.log("(SyncManager): Starting the synchronization process.");
       // Connecting to the database before any data operation
       await this.databaseService.connect();
+      console.log("(SyncManager): Connected to MongoDB");
+
+      const collection = this.databaseService.getCollection("items");
+      console.log(collection)
 
       // Fetching and preparing data for synchronization
       const rawData = await this.fetchData();
@@ -37,11 +39,13 @@ class SyncManager {
       // Performing the actual synchronization
       await this.dataSyncService.sync(preparedData);
       // Logging successful completion of synchronization
-      this.logger.log("SyncManager: Data synchronization completed successfully.");
+      console.log("(SyncManager): Data synchronization completed successfully.");
     } catch (error) {
       // Handling errors that may occur during the synchronization process
-      this.logger.error(`SyncManager: Error during synchronization - ${(error as Error).message}`);
+      console.error(`(SyncManager): Error during synchronization - ${(error as Error).message}`);
       // Additional error handling strategies can be implemented here
+    } finally {
+      await this.databaseService.close();
     }
   }
 
@@ -51,7 +55,7 @@ class SyncManager {
    */
   private async fetchData(): Promise<any[]> {
     // Logging the fetching operation
-    this.logger.log("SyncManager: Fetching data for preparation...");
+    console.log("(SyncManager): Fetching data for preparation...");
     // Simulating a delay in fetching data
     return new Promise(resolve => setTimeout(() => resolve([{ id: 1, data: 'Example' }]), 1000));
   }

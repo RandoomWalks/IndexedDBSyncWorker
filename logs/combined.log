@@ -1,2 +1,63 @@
 {"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-07T21:59:35.832Z"}
 {"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - Database connection failed","service":"user-service","timestamp":"2024-05-07T22:00:05.863Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T00:36:04.492Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:36:04.493Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T00:36:04.493Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:36:04.494Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T00:36:04.494Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:36:04.495Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:36:04.495Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T00:41:58.893Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T00:41:58.895Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:41:58.896Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T00:41:58.896Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:41:58.896Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T00:41:58.898Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:41:58.898Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T00:41:58.898Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:41:58.899Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T00:47:37.510Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T00:47:37.515Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:47:37.516Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T00:47:37.516Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T00:47:37.517Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T00:47:37.519Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:47:37.519Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T00:47:37.520Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T00:47:37.520Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T01:06:19.140Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T01:06:19.145Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:06:19.145Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T01:06:19.146Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:06:19.146Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T01:06:19.148Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:06:19.149Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T01:06:19.149Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:06:19.150Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T01:09:24.704Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T01:09:24.708Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:09:24.710Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T01:09:24.711Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:09:24.712Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T01:09:24.716Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:09:24.717Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T01:09:24.718Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:09:24.719Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T01:10:15.563Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T01:10:15.568Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:10:15.569Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T01:10:15.570Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:10:15.572Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T01:10:15.586Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:10:15.587Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T01:10:15.588Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:10:15.589Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 1.","service":"user-service","timestamp":"2024-05-12T01:13:23.405Z"}
+{"hostname":"jubajuba","level":"info","message":"SyncManager: Starting the synchronization process.","service":"user-service","timestamp":"2024-05-12T01:13:23.409Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:13:23.410Z"}
+{"hostname":"jubajuba","level":"info","message":"Retrying... Attempt 2","service":"user-service","timestamp":"2024-05-12T01:13:23.412Z"}
+{"hostname":"jubajuba","level":"error","message":"Connection attempt failed: Simulated connection failure","service":"user-service","timestamp":"2024-05-12T01:13:23.412Z"}
+{"hostname":"jubajuba","level":"error","message":"SyncManager: Error during synchronization - All connection attempts failed.","service":"user-service","timestamp":"2024-05-12T01:13:23.415Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:13:23.416Z"}
+{"hostname":"jubajuba","level":"info","message":"performSync 2.","service":"user-service","timestamp":"2024-05-12T01:13:23.417Z"}
+{"hostname":"jubajuba","level":"info","message":"Database connection closed.","service":"user-service","timestamp":"2024-05-12T01:13:23.418Z"}

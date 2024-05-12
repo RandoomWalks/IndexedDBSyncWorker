@@ -1,34 +1,44 @@
-import { Service } from "typedi";
 import * as mongodb from 'mongodb';
+import { LoggerService } from './LoggerService';
 
-@Service()
 class DatabaseService {
   private client: mongodb.MongoClient;
   private db?: mongodb.Db;
+  private retryCount = 0;
+  private maxRetries = 3;
 
-  constructor(url: string = process.env.DB_URL || 'mongodb://localhost:27017') {
-    // const url = process.env.DB_URL || 'mongodb://localhost:27017';
-
-    // MongoClient in v4.x and later handles connection pooling automatically with default settings
+  constructor(private logger: LoggerService, url: string = process.env.DB_URL || 'mongodb://localhost:27017') {
+    // Create a MongoDB client with default settings for connection pooling
     this.client = new mongodb.MongoClient(url);
   }
 
   async connect() {
     try {
+      // Attempt to connect to MongoDB
       await this.client.connect();
-      console.log("Database connected.");
+      this.db = this.client.db("syncDB"); // Select the database after a successful connection
+      console.log('(DatabaseService): Database connected.');
+      this.retryCount = 0; // Reset retry count on successful connection
     } catch (error) {
-      console.error("Failed to connect to the database:", error);
-      throw new Error("Database connection failed");
+      console.error('(DatabaseService): Connection attempt failed: ' + (error as Error).message);
+      if (this.retryCount < this.maxRetries) {
+        this.retryCount++;
+        console.log(`(DatabaseService): Retrying... Attempt ${this.retryCount}`);
+        await this.connect();
+      } else {
+        console.error("(DatabaseService): All connection attempts failed.");
+        throw new Error("Database connection failed");
+      }
     }
   }
 
   async reconnect() {
     try {
       await this.client.connect();
-      console.log('Reconnected to database successfully.');
+      this.db = this.client.db("syncDB"); // Ensure the db instance is correctly assigned on reconnect
+      console.log('(DatabaseService): Reconnected to database successfully.');
     } catch (error) {
-      console.log('Reconnection failed, retrying in 5 seconds...');
+      console.error('(DatabaseService): Reconnection failed, retrying in 5 seconds...');
       setTimeout(() => this.reconnect(), 5000);
     }
   }
@@ -40,18 +50,16 @@ class DatabaseService {
     return this.db.collection(collectionName);
   }
 
-  // Example CRUD operation
   async findOne(collectionName: string, query: object): Promise<any> {
     const collection = await this.getCollection(collectionName);
     return collection.findOne(query);
   }
 
-  // Cleanup resources
   async close(): Promise<void> {
     if (this.client) {
       await this.client.close();
+      console.log('(DatabaseService): Database connection closed.');
     }
-
   }
 }
 

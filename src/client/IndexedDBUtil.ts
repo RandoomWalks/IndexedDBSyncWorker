@@ -8,7 +8,6 @@ interface Item {
     syncStatus: 'pending' | 'synced';
 }
 
-@Service()
 class IndexedDBUtil {
     private static instance: IndexedDBUtil;
     private dbPromise: Promise<IDBDatabase>;
