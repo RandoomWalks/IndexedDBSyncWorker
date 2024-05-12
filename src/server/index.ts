@@ -1,3 +1,5 @@
+import express from 'express';
+import bodyParser from 'body-parser';
 import { DatabaseService } from "./DatabaseService";
 import { DataPreparationService } from "./DataPreparationService";
 import { DataSyncService } from "./DataSyncService";
@@ -17,6 +19,28 @@ const dataSyncService = new DataSyncService(logger, conflictResolver);
 
 // Instantiate SyncManager with all required services
 const syncManager = new SyncManager(databaseService, dataPreparationService, dataSyncService, logger);
+
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+
+// Define routes
+app.post('/sync', async (req, res) => {
+  try {
+    console.log("Triggering synchronization process...");
+    await syncManager.performSync();
+    res.status(200).send('Synchronization completed successfully.');
+  } catch (error) {
+    res.status(500).send('Failed to complete synchronization: ' + (error as Error).message);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
 
 /**
  * Sets up and initializes all necessary services and the synchronization manager.
@@ -59,4 +83,4 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 // Start the application setup
-setup();  
+// setup();  
