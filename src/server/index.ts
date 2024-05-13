@@ -36,7 +36,7 @@ app.get('/api/data', (req, res) => {
 // Route to trigger the synchronization process manually via HTTP POST request.
 app.post('/sync', async (req, res) => {
   try {
-    logger.log("Triggering synchronization process...");
+    console.log("Triggering synchronization process...");
     await syncManager.performSync(); // Execute synchronization.
     res.status(200).send('Synchronization completed successfully.');
   } catch (error) {
@@ -47,7 +47,7 @@ app.post('/sync', async (req, res) => {
 
 // Start the server on the specified port.
 app.listen(port, () => {
-  logger.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 /**
@@ -56,9 +56,9 @@ app.listen(port, () => {
  */
 async function setup() {
   try {
-    logger.log("(Index.ts): Starting synchronization process...");
+    console.log("(Index.ts): Starting synchronization process...");
     await syncManager.performSync();
-    logger.log("(Index.ts): Synchronization process completed.");
+    console.log("(Index.ts): Synchronization process completed.");
   } catch (error) {
     logger.error("(Index.ts): An error occurred during the synchronization process: " + (error as Error).message);
   }
@@ -70,9 +70,9 @@ async function setup() {
  */
 async function shutdown() {
   try {
-    logger.log("(Index.ts): Shutting down application...");
+    console.log("(Index.ts): Shutting down application...");
     await databaseService.close(); // Close database connections.
-    logger.log("(Index.ts): Application shutdown gracefully.");
+    console.log("(Index.ts): Application shutdown gracefully.");
   } catch (error) {
     logger.error("(Index.ts): An error occurred during application shutdown: " + (error as Error).message);
   } finally {

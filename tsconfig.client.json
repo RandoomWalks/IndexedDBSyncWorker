@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es6", // Compile to ECMAScript 6
+        "target": "ESNext", // Compile to ECMAScript 6
         "module": "ESNext", // Use ESNext modules for compatibility with Webpack's dynamic imports
         "moduleResolution": "node", // Node-style module resolution
         "outDir": "./dist", // Output directory for compiled files
@@ -20,6 +20,7 @@
     ], // Include all files in the src directory
     "exclude": [
         "node_modules",
-        "src/client/worker/**/*"
+        "src/client/worker/**/*",
+        "dist"
     ] // Exclude node_modules
 }

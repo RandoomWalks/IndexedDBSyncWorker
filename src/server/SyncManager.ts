@@ -1,3 +1,4 @@
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import { DatabaseService } from "./DatabaseService";
 import { DataPreparationService } from "./DataPreparationService";
 import { DataSyncService } from "./DataSyncService";
@@ -24,27 +25,27 @@ class SyncManager {
    */
   async performSync() {
     try {
-      this.logger.log("Starting the synchronization process."); // Improved logging using a dedicated service.
+      console.log("Starting the synchronization process."); // Improved logging using a dedicated service.
       await this.databaseService.connect(); // Establish a connection to the database.
-      this.logger.log("Connected to MongoDB");
+      console.log("Connected to MongoDB");
 
       // Retrieve a specific collection to work with.
       const collection = this.databaseService.getCollection("items");
-      this.logger.log(`Working with collection: ${collection}`);
+      console.log(`Working with collection: ${collection}`);
 
       // Fetch raw data, prepare it for synchronization, and then sync.
       const rawData = await this.fetchData();
       const preparedData = await this.dataPreparationService.prepareData(rawData);
       await this.dataSyncService.sync(preparedData);
-      this.logger.log("Data synchronization completed successfully.");
+      console.log("Data synchronization completed successfully.");
     } catch (error) {
       // Generic error handling and logging the specific error message.
-      this.logger.error(`Error during synchronization - ${(error as Error).message}`);
+      console.error(`Error during synchronization - ${(error as Error).message}`);
       // Here, strategies such as retry mechanisms or alerts can be implemented.
     } finally {
       // Ensure the database connection is closed even if an error occurs.
       await this.databaseService.close();
-      this.logger.log("Database connection closed.");
+      console.log("Database connection closed.");
     }
   }
 
@@ -53,7 +54,7 @@ class SyncManager {
    * This method showcases a placeholder for more complex data retrieval logic.
    */
   private async fetchData(): Promise<any[]> {
-    this.logger.log("Fetching data for preparation...");
+    console.log("Fetching data for preparation...");
     // Delay simulates network or database latency.
     return new Promise(resolve => setTimeout(() => resolve([{ id: 1, data: 'Example' }]), 1000));
   }

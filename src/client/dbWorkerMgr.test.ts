@@ -1,5 +1,23 @@
 import { IndexedDBManager } from './IndexedDBManager';
 
+// someTest.test.ts
+console.log("Testing access to global types...");
+console.log("Type of global Worker:", typeof global.Worker);
+
+// example.test.ts
+test('should correctly handle messages', () => {
+  const mockWorker = new global.Worker();
+
+  console.log("Before sending message to mock worker...");
+  // global.Worker.postMessage({ type: 'test' });
+  mockWorker.postMessage({ type: 'test' });
+
+  // console.log("After sending message:", global.Worker.postMessage.mock.calls);
+  console.log("After sending message:", mockWorker.postMessage.mock.calls);
+
+});
+
+
 // Tests for the IndexedDBManager class
 describe('IndexedDBManager', () => {
   let indexedDBManager: IndexedDBManager;

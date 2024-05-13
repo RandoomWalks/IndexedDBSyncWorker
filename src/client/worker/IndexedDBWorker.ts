@@ -95,9 +95,9 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
                 console.error(`Unsupported operation type: ${type}`);
                 throw new Error('Unsupported operation type');
         }
-    } catch (error) {
+    } catch (error:any) {
         // Handle any errors that occur during message processing.
         console.error('Error in worker:', error);
-        self.postMessage({ type: 'error', error: error.message || String(error) });
+        self.postMessage({ type: 'error', error: error.message || String((error as Error)) });
     }
 };
