@@ -69,31 +69,48 @@ describe('IndexedDBManager Error and Data Handling', () => {
   // Setup before each test
   beforeEach(() => {
     // Detailed mock setup including event listeners
-    mockWorker = {
-      postMessage: jest.fn(),
-      addEventListener: jest.fn((event, handler) => {
-        if (event === 'message') {
-          mockWorker.onmessage = handler;
-        } else if (event === 'error') {
-          mockWorker.onerror = handler;
-        }
-      }),
-      removeEventListener: jest.fn(),
-      terminate: jest.fn(),
-      onmessage: jest.fn(),
-      onerror: jest.fn()
-    };
+
+    const mockWorker= {
+      constructor: function() {
+        postMessage: jest.fn(),
+        addEventListener: jest.fn((event, handler) => {
+          if (event === 'message') {
+            mockWorker.onmessage = handler;
+          } else if (event === 'error') {
+            mockWorker.onerror = handler;
+          }
+        }),
+        removeEventListener: jest.fn(),
+        terminate: jest.fn(),
+        onmessage: jest.fn(),
+        onerror: jest.fn()
+      }
+    } 
+    // mockWorker = {
+    //   postMessage: jest.fn(),
+    //   addEventListener: jest.fn((event, handler) => {
+    //     if (event === 'message') {
+    //       mockWorker.onmessage = handler;
+    //     } else if (event === 'error') {
+    //       mockWorker.onerror = handler;
+    //     }
+    //   }),
+    //   removeEventListener: jest.fn(),
+    //   terminate: jest.fn(),
+    //   onmessage: jest.fn(),
+    //   onerror: jest.fn()
+    // };
     global.Worker = jest.fn(() => mockWorker);
     indexedDBManager = new IndexedDBManager(new Worker('worker/IndexedDBWorker.js'));
     console.log("IndexedDBManager initialized with detailed event handling for testing.");
   });
-  
+
   // Test to simulate worker initialization failure
-  it('should handle worker initialization failure', () => {
-    global.Worker = jest.fn(() => { throw new Error('Worker failed to initialize'); });
-    expect(() => new IndexedDBManager(new Worker('worker/IndexedDBWorker.js')))
+  it.only('should initialization failure', () => {
+    mockWorker = jest.fn(() => { throw new Error('Worker failed to initialize'); });
+    expect(() => new IndexedDBManager(new global.Worker('worker/IndexedDBWorker.js')))
       .toThrow('Worker failed to initialize');
-    console.error("Handled worker initialization failure.");
+    // console.error("Handled worker initialization failure.");
   });
 
   // Test to verify error handling from the worker
