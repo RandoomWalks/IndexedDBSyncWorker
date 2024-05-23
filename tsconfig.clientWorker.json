@@ -19,6 +19,7 @@
         "src/client/worker/**/*"
     ], // Adjust this path to where your worker files are located
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }
